@@ -1,0 +1,35 @@
+function bb1_bb2;
+interface of bb1_bb2 {
+	in uint16_t x, y, z, psi;
+	out uint16_t x_up, x_down, y_up, y_down, z_up, z_down;
+}
+
+policy bb1 of bb1_bb2 {
+    internals{
+        constant uint16_t max_z := 100;
+        //dtimer_t t;
+    }
+
+	states {
+		l0 {												
+			-> l0 on ((z+z_up) <= max_z);
+
+			-> violation on ((z+z_up) > max_z);
+		}
+	}
+}
+
+policy bb2 of bb1_bb2 {
+	internals {
+		constant uint16_t min_z := 0;
+	}
+
+	states {
+		l0 {												
+			-> l0 on ((z-z_down) >= min_z);
+
+			-> violation on ((z-z_down) < min_z);
+		}
+	}
+}
+

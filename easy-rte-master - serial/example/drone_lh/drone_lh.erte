@@ -1,0 +1,33 @@
+function drone_lh;
+interface of drone_lh {
+	in uint16_t X, Y, Z, P;
+	out uint16_t A, B, C, D, E, F;
+}
+
+policy DRONE_LH of drone_lh {
+    internals{
+        
+        dtimer_t v;
+    }
+
+	states {
+		l0 {
+            //min_alt = 10												
+			-> l0 on (Z > 10);
+
+            -> l0 on (Z = 0);
+
+            -> l1 on (Z > 0 && Z <= 10);
+
+			//-> violation on ((z+z_up) > max_z);
+		}
+        l1 {
+            -> l0 on (E >= 10 && v <= 5);
+
+            -> l1 on (E < 10 && v < 5);
+
+            -> violation on (E < 10 && v >= 5);
+        }
+	}
+}
+

@@ -1,0 +1,24 @@
+function drone_oi1;
+interface of drone_oi1 {
+	in uint16_t X, Y, Z, P;
+	out uint16_t A, B, C, D, E, F;
+}
+
+policy DRONE_OI1 of drone_oi1 {
+    internals{
+        
+        dtimer_t v;
+    }
+	states {
+		l0 {
+            -> l0 on (E > 0 && F = 0);
+
+            -> l0 on (E = 0 && F > 0);
+
+            -> l0 on (E = 0 && F = 0);
+
+            -> violation on (E > 0 && F > 0);
+		}
+	}
+}
+

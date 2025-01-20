@@ -1,0 +1,36 @@
+function drone_bcs;
+interface of drone_bcs {
+	in uint16_t X, Y, Z, P;
+	out uint16_t A, B, C, D, E, F;
+}
+
+policy DRONE_BCS of drone_bcs {
+    internals{
+        
+        dtimer_t v;
+    }
+
+	states {
+		l0 {
+            -> l0 on (Z = 0);
+
+            -> l0 on (Z > 0 && A < 250 && B < 250 && C < 250 && D < 250 && E < 250 && F < 250);
+
+            -> l1 on (Z > 0 && A > 250 && B > 250 && C > 250 && D > 250 && E > 250 && F > 250): v := 0;
+        }
+        l1 {
+            -> l1 on (A > 250 && B > 250 && C > 250 && D > 250 && E > 250 && F > 250 && v < 5);
+
+            -> l2 on (F > 0 && F < 250 && v <= 5);
+
+            -> violation on (A > 250 && B > 250 && C > 250 && D > 250 && E > 250 && F > 250 && v >= 5);
+        }
+        l2 {
+            -> l2 on (E > 0 && E < 250 && Z > 0);
+            
+            -> l0 on (Z = 0);
+
+            -> l1 on (Z > 0 && A > 250 && B > 250 && C > 250 && D > 250 && E > 250 && F > 250): v := 0;
+        }
+	}
+}
